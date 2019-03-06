@@ -5,6 +5,12 @@ const rand = (max = 6, min = 1) => {
   return Math.floor(Math.random() * (max - min) + min);
 };
 
+const primaryApportionment = (TEST_DATA, getEvent, data, tripEvent) => {
+  for (let i = 0; i < TEST_DATA; i++) {
+    tripEvent.insertAdjacentHTML(`beforeend`, getEvent(data()));
+  }
+}
+
 const generIcons = (data) => {
   const typeIcons = Array.from(data.routeType);
   return typeIcons[rand(9, 0)];
@@ -39,4 +45,4 @@ const finishAndDuration = (data) => {
   return [durationHours, timeFinish];
 };
 
-export default {Filters, TEST_DATA, rand, generIcons, getRandomOffers, startTrip, finishAndDuration};
+export default {Filters, TEST_DATA, rand, generIcons, getRandomOffers, startTrip, finishAndDuration, primaryApportionment};

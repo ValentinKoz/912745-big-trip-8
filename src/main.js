@@ -20,11 +20,7 @@ for (let i = 0; i < Filters.length; i++) {
 
 conteinerFilters = conteinerFilters.join(` `);
 tripFilter.insertAdjacentHTML(`beforeend`, conteinerFilters);
-
-
-for (let i = 0; i < TEST_DATA; i++) {
-  tripEvent.insertAdjacentHTML(`beforeend`, getEvent(data()));
-}
+otherFunc.primaryApportionment(TEST_DATA, getEvent, data, tripEvent);
 
 tripFilter.addEventListener(`change`, function (evt) {
   if (evt.target.tagName === `INPUT`) {
