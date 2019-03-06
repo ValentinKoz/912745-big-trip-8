@@ -5,11 +5,11 @@ const rand = (max = 6, min = 1) => {
   return Math.floor(Math.random() * (max - min) + min);
 };
 
-const primaryApportionment = (TEST_DATA, getEvent, data, tripEvent) => {
+const primaryApportionment = (getEvent, data, tripEvent) => {
   for (let i = 0; i < TEST_DATA; i++) {
     tripEvent.insertAdjacentHTML(`beforeend`, getEvent(data()));
   }
-}
+};
 
 const generIcons = (data) => {
   const typeIcons = Array.from(data.routeType);

@@ -3,7 +3,6 @@ import getTripFilter from './make-filter.js';
 import data from './make-data.js';
 import otherFunc from './get-other-functions.js';
 
-const TEST_DATA = otherFunc.TEST_DATA;
 const Filters = otherFunc.Filters;
 
 let rand = (max = 6, min = 1) => {
@@ -20,7 +19,7 @@ for (let i = 0; i < Filters.length; i++) {
 
 conteinerFilters = conteinerFilters.join(` `);
 tripFilter.insertAdjacentHTML(`beforeend`, conteinerFilters);
-otherFunc.primaryApportionment(TEST_DATA, getEvent, data, tripEvent);
+otherFunc.primaryApportionment(getEvent, data, tripEvent);
 
 tripFilter.addEventListener(`change`, function (evt) {
   if (evt.target.tagName === `INPUT`) {
