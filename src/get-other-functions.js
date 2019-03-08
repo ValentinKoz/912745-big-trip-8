@@ -5,10 +5,6 @@ import data from './make-data.js';
 const Filters = [`Everything`, `Future`, `Past`];
 const TEST_DATA = 7;
 
-const rand = (max = 6, min = 1) => {
-  return Math.floor(Math.random() * (max - min) + min);
-};
-
 const primaryApportionment = () => {
   for (let i = 0; i < TEST_DATA; i++) {
     createPoint();
@@ -34,4 +30,4 @@ const createPoint = () => {
   };
 };
 
-export default {Filters, TEST_DATA, rand, primaryApportionment, createPoint};
+export default {Filters, TEST_DATA, primaryApportionment, createPoint};

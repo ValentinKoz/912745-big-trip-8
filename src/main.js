@@ -1,12 +1,8 @@
 import getTripFilter from './make-filter.js';
 import otherFunc from './get-other-functions.js';
-
+import {rand} from './random.js';
 
 const Filters = otherFunc.Filters;
-
-let rand = (max = 6, min = 1) => {
-  return Math.floor(Math.random() * (max - min) + min);
-};
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripEvent = document.querySelector(`.trip-day__items`);
