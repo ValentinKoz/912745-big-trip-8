@@ -36,7 +36,8 @@ const data = () => ({
   Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat.
   Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`,
   dateTrip: Date.now() + 1 + Math.floor(Math.random() * 7 * 24 * 60) * 60 * 1000,
-  price: Math.floor(Math.random() * 15 * 10)
+  price: Math.floor(Math.random() * 15 * 10),
+  durationPerMinutes: Math.floor(Math.random() * (10000000 - 10000) + 10000),
 });
 
 export default data;

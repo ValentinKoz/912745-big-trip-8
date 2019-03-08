@@ -1,7 +1,6 @@
-import getEvent from './make-event.js';
 import getTripFilter from './make-filter.js';
-import data from './make-data.js';
 import otherFunc from './get-other-functions.js';
+
 
 const Filters = otherFunc.Filters;
 
@@ -19,14 +18,15 @@ for (let i = 0; i < Filters.length; i++) {
 
 conteinerFilters = conteinerFilters.join(` `);
 tripFilter.insertAdjacentHTML(`beforeend`, conteinerFilters);
-otherFunc.primaryApportionment(getEvent, data, tripEvent);
+
+otherFunc.primaryApportionment();
 
 tripFilter.addEventListener(`change`, function (evt) {
   if (evt.target.tagName === `INPUT`) {
     tripEvent.innerText = ``;
     const eventCount = rand();
     for (let i = 0; i < eventCount; i++) {
-      tripEvent.insertAdjacentHTML(`beforeend`, getEvent(data()));
+      otherFunc.createPoint();
     }
   }
 });
