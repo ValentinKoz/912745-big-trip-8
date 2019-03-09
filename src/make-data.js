@@ -19,7 +19,7 @@ const data = () => ({
     `Luanda`,
     `Dacca`,
     `Minsk`,
-  ][Math.floor(Math.random() * 7)],
+  ],
   photo: `http://picsum.photos/300/150?r=${Math.random()}`,
   offers: new Set([
     `Add luggage`,

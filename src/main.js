@@ -1,8 +1,6 @@
 import getTripFilter from './make-filter.js';
-import otherFunc from './get-other-functions.js';
+import {primaryApportionment, createPoint, Filters} from './other-functions.js';
 import {rand} from './random.js';
-
-const Filters = otherFunc.Filters;
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripEvent = document.querySelector(`.trip-day__items`);
@@ -15,14 +13,14 @@ for (let i = 0; i < Filters.length; i++) {
 conteinerFilters = conteinerFilters.join(` `);
 tripFilter.insertAdjacentHTML(`beforeend`, conteinerFilters);
 
-otherFunc.primaryApportionment();
+primaryApportionment();
 
 tripFilter.addEventListener(`change`, function (evt) {
   if (evt.target.tagName === `INPUT`) {
     tripEvent.innerText = ``;
     const eventCount = rand();
     for (let i = 0; i < eventCount; i++) {
-      otherFunc.createPoint();
+      createPoint();
     }
   }
 });

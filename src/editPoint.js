@@ -1,55 +1,16 @@
-import {rand} from './random.js';
 import {createElement} from './create-element.js';
+import {generalization} from './other-functions.js';
 
 class EditPointTrip {
-  constructor(data) {
-    this._routeType = data.routeType;
-    this._cities = data.cities;
-    this._photo = data.photo;
-    this._offers = data.offers;
-    this._text = data.text;
-    this._dateTrip = data.dateTrip;
-    this._price = data.price;
-    this._durationPerMinutes = data.durationPerMinutes;
+  constructor(PointTrip) {
+    this._data = PointTrip;
 
-    this._icon = ``;
     this._element = null;
     this._onSubmit = null;
   }
 
   get element() {
     return this._element;
-  }
-  _getDateTrip() {
-    const formatDate = new Date(this._dateTrip);
-    const dateTime = formatDate.toString().split(` `);
-    return dateTime[2] + ` ` + dateTime[1];
-  }
-
-  _getRandomOffers() {
-    const QUTY_OFFERS = rand(3, 0);
-    const setFromArray = Array.from(this._offers);
-    const offers = new Set([]);
-
-    while (offers.size < QUTY_OFFERS) {
-      const randomOffer = setFromArray[rand(4, 0)];
-      offers.add(randomOffer);
-    }
-    return [...offers].map((it) => `<input class="point__offers-input visually-hidden" type="checkbox" id="${it.toLowerCase().split(` `).join(`-`)}" name="offer" value="${it.toLowerCase().split(` `).join(`-`)}">
-      <label for="${it.toLowerCase().split(` `).join(`-`)}" class="point__offers-label">
-        <span class="point__offer-service"${it}</span> + €<span class="point__offer-price">${rand(250, 15)} ${it}</span>
-      </label>`).join(` `);
-  }
-
-  _getText() {
-    const QUTY_OFFERS = rand(4, 2);
-    let text = this._text;
-    text = text.split(`.`);
-    let descriptionText = [];
-    while (descriptionText.length !== QUTY_OFFERS) {
-      descriptionText.push(text[rand(9, 0)]);
-    }
-    return descriptionText;
   }
 
   get template() {
@@ -58,11 +19,11 @@ class EditPointTrip {
         <header class="point__header">
           <label class="point__date">
             choose day
-            <input class="point__input" type="text" placeholder="MAR 18" name="day" value="${this._getDateTrip()}">
+            <input class="point__input" type="text" placeholder="MAR 18" name="day" value="">
           </label>
 
           <div class="travel-way">
-            <label class="travel-way__label" for="travel-way__toggle">✈️</label>
+            <label class="travel-way__label" for="travel-way__toggle">${this._data._routeType[1]}</label>
 
             <input type="checkbox" class="travel-way__toggle visually-hidden" id="travel-way__toggle">
 
@@ -92,8 +53,8 @@ class EditPointTrip {
           </div>
 
           <div class="point__destination-wrap">
-            <label class="point__destination-label" for="destination">Flight to</label>
-            <input class="point__destination-input" list="destination-select" id="destination" value="${this._cities}" name="destination">
+            <label class="point__destination-label" for="destination">${this._data._routeType[0]} to </label>
+            <input class="point__destination-input" list="destination-select" id="destination" value="${this._data._cities}" name="destination">
             <datalist id="destination-select">
               <option value="airport"></option>
               <option value="Geneva"></option>
@@ -104,13 +65,13 @@ class EditPointTrip {
 
           <label class="point__time">
             choose time
-            <input class="point__input" type="text" value="00:00 — 00:00" name="time" placeholder="00:00 — 00:00">
+            <input class="point__input" type="text" value="${this._data._startTrip()}&nbsp;&mdash; ${this._data._finishTrip()}" name="time" placeholder="00:00 — 00:00">
           </label>
 
           <label class="point__price">
             write price
             <span class="point__price-currency">€</span>
-            <input class="point__input" type="text" value="${this._price}" name="price">
+            <input class="point__input" type="text" value="${this._data._price}" name="price">
           </label>
 
           <div class="point__buttons">
@@ -129,16 +90,19 @@ class EditPointTrip {
             <h3 class="point__details-title">offers</h3>
 
             <div class="point__offers-wrap">
-              ${this._getRandomOffers()}
+              ${this._data._offers.map((it) => `<input class="point__offers-input visually-hidden" type="checkbox" id="${generalization(it)}" name="offer" value="${generalization(it)}">
+                <label for="${generalization(it)}" class="point__offers-label">
+                  <span class="point__offer-service"${it}</span> <span class="point__offer-price">${it}</span>
+                </label>`).join(` `)}
               </label>
             </div>
 
           </section>
           <section class="point__destination">
             <h3 class="point__details-title">Destination</h3>
-            <p class="point__destination-text">${this._getText()}</p>
+            <p class="point__destination-text">${this._data._text}</p>
             <div class="point__destination-images">
-              <img src="${this._photo}" alt="picture from place" class="point__destination-image">
+              <img src="${this._data._photo}" alt="picture from place" class="point__destination-image">
             </div>
           </section>
           <input type="hidden" class="point__total-price" name="total-price" value="">
