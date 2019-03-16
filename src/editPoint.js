@@ -1,16 +1,13 @@
-import {createElement} from './create-element.js';
 import {generalization} from './other-functions.js';
+import Component from './component.js';
 
-class EditPointTrip {
+class EditPointTrip extends Component {
   constructor(PointTrip) {
+    super();
     this._data = PointTrip;
 
     this._element = null;
     this._onSubmit = null;
-  }
-
-  get element() {
-    return this._element;
   }
 
   get template() {
@@ -121,17 +118,6 @@ class EditPointTrip {
   }
   set submit(fn) {
     this._onSubmit = fn;
-  }
-
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.reset();
-    this._element = null;
   }
 
   bind() {

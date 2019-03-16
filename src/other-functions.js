@@ -1,7 +1,7 @@
 import PointTrip from './pointTrip.js';
 import EditPointTrip from './editPoint.js';
 import currentData from './set-current-data.js';
-import data from './make-data.js';
+import data from './data.js';
 import {rand} from './random.js';
 
 export const Filters = [`Everything`, `Future`, `Past`];

@@ -1,8 +1,9 @@
-import {createElement} from './create-element.js';
 import {setFormatTime} from './other-functions.js';
+import Component from './component.js';
 
-class PointTrip {
+class PointTrip extends Component {
   constructor(data) {
+    super();
     this._routeType = data.routeType;
     this._cities = data.cities;
     this._photo = data.photo;
@@ -12,13 +13,10 @@ class PointTrip {
     this._price = data.price;
     this._durationPerMinutes = data.durationPerMinutes;
 
-    this._element = null;
+    this.onClick = this.onClick.bind(this);
     this._onEdit = null;
   }
 
-  get element() {
-    return this._element;
-  }
   set onEdit(fn) {
     this._onEdit = fn;
   }
@@ -61,24 +59,14 @@ class PointTrip {
     }
   }
 
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
-  }
-
   bind() {
     this._element
-    .addEventListener(`click`, this.onClick.bind(this));
-  }
-  reset() {
-    this._element
-    .removeEventListener(`click`, this.onClick.bind(this));
+    .addEventListener(`click`, this.onClick);
   }
 
-  unrender() {
-    this.reset();
-    this._element = null;
+  reset() {
+    this._element
+    .removeEventListener(`click`, this.onClick);
   }
 
 }
