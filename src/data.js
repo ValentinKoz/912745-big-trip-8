@@ -1,4 +1,5 @@
 import {rand} from './random.js';
+import moment from 'moment';
 
 const data = () => ({
   routeType: new Map([
@@ -37,7 +38,7 @@ const data = () => ({
   Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.
   Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat.
   Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`,
-  dateTrip: Date.now() + 1 + Math.floor(Math.random() * 7 * 24 * 60) * 60 * 1000,
+  dateTrip: moment(),
   price: Math.floor(Math.random() * 15 * 10),
   durationPerMinutes: rand(10000000, 10000),
 });
