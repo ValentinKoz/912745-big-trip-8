@@ -1,15 +1,15 @@
-import {generType, getRandomOffers, getText, setPriceToOffers} from './other-functions.js';
+import {generType, getRandomOffers, getText, setPriceToOffers, randomDate} from './function-for-set-current-data.js';
 import {rand} from './random.js';
 
 const currentData = (data) => ({
   routeType: generType(data.routeType),
-  cities: data.cities[rand(7, 0)],
-  photo: data.photo + `${Math.random()}`,
+  city: data.cities[rand(7, 0)],
+  photo: [data.photo + `${Math.random()}`, data.photo + `${Math.random()}`, data.photo + `${Math.random()}`],
   offers: setPriceToOffers(getRandomOffers(data.offers)),
   text: getText(data.text),
-  dateTrip: data.dateTrip,
   price: data.price,
-  durationPerMinutes: data.durationPerMinutes,
+  dateTrip: randomDate(data.dateTrip),
+  durationPerMinutes: (data.durationPerMinutes / 60000).toFixed(),
 });
 
 export default currentData;
