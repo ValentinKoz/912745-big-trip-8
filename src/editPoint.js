@@ -21,9 +21,11 @@ class EditPointTrip extends Component {
     this._onChangeCities = this._onChangeCities.bind(this);
     this._onChangeDuration = this._onChangeDuration.bind(this);
     this._onChangeTravelWay = this._onChangeTravelWay.bind(this);
+    this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
 
     this._element = null;
     this._onSubmit = null;
+    this._onDelete = null;
   }
 
   _processForm() {
@@ -44,6 +46,14 @@ class EditPointTrip extends Component {
       this._onSubmit(newData);
     }
     this.update(newData);
+  }
+
+  _onDeleteButtonClick(evt) {
+    evt.preventDefault();
+
+    if (evt.target.innerHTML === `Delete` && typeof this._onDelete === `function`) {
+      this._onDelete();
+    }
   }
 
   update(data) {
@@ -88,7 +98,7 @@ class EditPointTrip extends Component {
   }
 
   _onChangeDuration(evt) {
-    const [start, finish] = evt.target.value.split(`—`);
+    const [start, finish] = evt.target.value.split(` — `);
     const difference = moment.utc(moment(finish, `HH:mm`) - moment(start, `HH:mm`)).format(`HH:mm`);
     const [hoursStart, minutesStart] = start.split(`:`);
     const [hoursDiff, minutesDiff] = difference.split(`:`);
@@ -159,7 +169,7 @@ class EditPointTrip extends Component {
 
           <label class="point__time">
             choose time
-            <input class="point__input" type="text" value="${this._dateTrip.format(`HH:mm`)}&nbsp;&mdash; ${this._finishTrip().format(`HH:mm`)}" name="time" placeholder="00:00 — 00:00">
+            <input class="point__input" type="text" value="${this._dateTrip.format(`HH:mm`)} — ${this._finishTrip().format(`HH:mm`)}" name="time" placeholder="00:00 — 00:00">
           </label>
 
           <label class="point__price">
@@ -205,8 +215,12 @@ class EditPointTrip extends Component {
     </article>`;
   }
 
-  set submit(fn) {
+  set onSubmit(fn) {
     this._onSubmit = fn;
+  }
+
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   bind() {
@@ -215,6 +229,7 @@ class EditPointTrip extends Component {
     this._element.querySelector(`.point__destination-input`).addEventListener(`change`, this._onChangeCities);
     this._element.querySelector(`.point__price .point__input`).addEventListener(`change`, this._onChangePrice);
     this._element.querySelector(`.point__time .point__input`).addEventListener(`change`, this._onChangeDuration);
+    this._element.querySelector(`.point__buttons`).lastElementChild.addEventListener(`click`, this._onDeleteButtonClick);
 
     flatpickr(this._element.querySelector(`.point__time .point__input`), {mode: `range`, dateFormat: `H:i`, enableTime: true, time24hr: true, locale: {rangeSeparator: ` — `}});
 
@@ -226,6 +241,7 @@ class EditPointTrip extends Component {
     this._element.querySelector(`.point__destination-input`).removeEventListener(`change`, this._onChangeCities);
     this._element.querySelector(`.point__price .point__input`).removeEventListener(`change`, this._onChangePrice);
     this._element.querySelector(`.point__time .point__input`).addEventListener(`change`, this._onChangeDuration);
+    this._element.querySelector(`.point__buttons`).lastElementChild.removeEventListener(`click`, this._onDeleteButtonClick);
   }
 
 }

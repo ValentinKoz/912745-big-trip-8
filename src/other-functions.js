@@ -1,16 +1,6 @@
-import PointTrip from './pointTrip.js';
-import EditPointTrip from './editPoint.js';
-import currentData from './set-current-data.js';
-import data from './data.js';
-
+import {createElement} from './create-element.js';
 export const Filters = [`Everything`, `Future`, `Past`];
-export const TEST_DATA = 7;
 
-export const primaryApportionment = () => {
-  for (let i = 0; i < TEST_DATA; i++) {
-    createPoint();
-  }
-};
 export const typeTravelWay = {
   [`Taxi`]: `🚕`,
   [`Bus`]: `🚌`,
@@ -45,31 +35,77 @@ export const generalization = (it) => {
   return it.toLowerCase().split(` `).join(`-`);
 };
 
-export const createPoint = () => {
-  const curData = currentData(data());
-  const tripContainer = document.querySelector(`.trip-day__items`);
-  const componentTrip = new PointTrip(curData);
-  const editComponentTrip = new EditPointTrip(curData);
+export const filterInfoTransport = (points) => {
+  const massivTags = {};
+  const labels = [];
+  const data = [];
 
-  tripContainer.appendChild(componentTrip.render());
-
-  componentTrip.onEdit = () => {
-    editComponentTrip.render();
-    tripContainer.replaceChild(editComponentTrip.element, componentTrip.element);
-    componentTrip.unrender();
+  for (let i = 0; i < points.length; i++) {
+    const mas = points[i].routeType.join(` `);
+    if (massivTags[mas]) {
+      massivTags[mas] += 1;
+    } else {
+      massivTags[mas] = 1;
+    }
+  }
+  for (const key in massivTags) {
+    if (key) {
+      labels.push(`${key}`);
+      data.push(massivTags[key]);
+    }
+  }
+  return {
+    labels,
+    data,
   };
+};
 
-  editComponentTrip.submit = (newObject) => {
-    curData.durationPerMinutes = newObject.durationPerMinutes;
-    curData.routeType = newObject.routeType;
-    curData.city = newObject.city;
-    curData.dateTrip = newObject.dateTrip;
-    curData.price = newObject.price;
+export const filterInfoMoney = (points) => {
+  const massivTags = {};
+  const labels = [];
+  const data = [];
 
-
-    componentTrip.update(curData);
-    componentTrip.render();
-    tripContainer.replaceChild(componentTrip.element, editComponentTrip.element);
-    editComponentTrip.unrender();
+  for (let i = 0; i < points.length; i++) {
+    const mas = points[i].routeType.join(` `);
+    if (massivTags[mas]) {
+      massivTags[mas] += points[i].price;
+    } else {
+      massivTags[mas] = points[i].price;
+    }
+  }
+  for (const key in massivTags) {
+    if (key) {
+      labels.push(`${key}`);
+      data.push(massivTags[key]);
+    }
+  }
+  return {
+    labels,
+    data,
   };
+};
+
+export const blankChart = () => {
+  return `
+    <section class="statistic content-wrap" id="stats">
+      <div class="statistic__item statistic__item--money">
+        <canvas class="statistic__money" width="900"></canvas>
+      </div>
+
+      <div class="statistic__item statistic__item--transport">
+        <canvas class="statistic__transport" width="900"></canvas>
+      </div>
+
+      <div class="statistic__item statistic__item--time-spend">
+        <canvas class="statistic__time-spend" width="900"></canvas>
+      </div>
+  </section>`;
+};
+
+export const renderBlankChart = (conteiner) => {
+  if (conteiner.lastChild.tagName === `SECTION`) {
+    const oldChild = conteiner.lastChild;
+    conteiner.removeChild(oldChild);
+  }
+  conteiner.appendChild(createElement(blankChart()));
 };
