@@ -227,7 +227,7 @@ class EditPointTrip extends Component {
     this._element.querySelector(`.point__time .point__input`).addEventListener(`change`, this._onChangeDuration);
     this._element.querySelector(`.point__buttons`).lastElementChild.addEventListener(`click`, this._onDeleteButtonClick);
 
-    flatpickr(this._element.querySelector(`.point__time .point__input`), {mode: `range`, dateFormat: "Y-m-d H:i", enableTime: true, locale: {rangeSeparator: ` — `}});
+    flatpickr(this._element.querySelector(`.point__time .point__input`), {mode: `range`, dateFormat: `Y-m-d H:i`, enableTime: true, locale: {rangeSeparator: ` — `}});
 
   }
 
