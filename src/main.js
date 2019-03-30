@@ -18,17 +18,17 @@ renderPoint(initialPoints, tripContainer);
 renderFilter(initFilters, tripFilter, Filter, initialPoints, renderPoint, tripContainer);
 
 tripControlsMenu.addEventListener(`click`, (evt) => {
+  const menu = document.querySelector(`.trip-controls__menus`);
   if (evt.target.innerHTML === `Stats`) {
     renderBlankChart(document.querySelector(`body`), blankChart);
     const main = document.querySelector(`.main`);
     const statistic = document.querySelector(`.statistic`);
-    const menu = document.querySelector(`.trip-controls__menus`);
 
     main.classList.add(`visually-hidden`);
     statistic.classList.remove(`visually-hidden`);
 
-    menu.children[1].classList.add(`.view-switch__item--active`);
-    menu.children[0].classList.remove(`.view-switch__item--active`);
+    menu.children[1].classList.add(`view-switch__item--active`);
+    menu.children[0].classList.remove(`view-switch__item--active`);
 
     const kindsTransports = filterInfoTransport(initialPoints);
     const spendMoney = filterInfoMoney(initialPoints);
@@ -40,6 +40,8 @@ tripControlsMenu.addEventListener(`click`, (evt) => {
       document.querySelector(`body`).removeChild(statistic);
     }
     const main = document.querySelector(`.main`);
+    menu.children[0].classList.add(`view-switch__item--active`);
+    menu.children[1].classList.remove(`view-switch__item--active`);
     main.classList.remove(`visually-hidden`);
   }
 });

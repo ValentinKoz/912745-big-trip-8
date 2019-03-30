@@ -99,15 +99,11 @@ class EditPointTrip extends Component {
 
   _onChangeDuration(evt) {
     const [start, finish] = evt.target.value.split(` — `);
-    const difference = moment.utc(moment(finish, `HH:mm`) - moment(start, `HH:mm`)).format(`HH:mm`);
-    const [hoursStart, minutesStart] = start.split(`:`);
-    const [hoursDiff, minutesDiff] = difference.split(`:`);
-
-    this._dateTrip = this._dateTrip.hour(hoursStart).minute(minutesStart);
-    this._durationPerMinutes = +minutesDiff + (60 * +hoursDiff);
+    const difference = moment.duration(moment(finish).diff(moment(start))).asMinutes();
+    this._dateTrip = moment(start);
+    this._durationPerMinutes = difference;
 
   }
-
   get template() {
     return `<article class="point">
       <form class="card__form" action="" method="get">
@@ -169,7 +165,7 @@ class EditPointTrip extends Component {
 
           <label class="point__time">
             choose time
-            <input class="point__input" type="text" value="${this._dateTrip.format(`HH:mm`)} — ${this._finishTrip().format(`HH:mm`)}" name="time" placeholder="00:00 — 00:00">
+            <input class="point__input" type="text" value="${this._dateTrip.format(`YYYY-DD-MM HH:mm`)} — ${this._finishTrip().format(`YYYY-DD-MM HH:mm`)}" name="time" placeholder="00:00 — 00:00">
           </label>
 
           <label class="point__price">
@@ -231,7 +227,7 @@ class EditPointTrip extends Component {
     this._element.querySelector(`.point__time .point__input`).addEventListener(`change`, this._onChangeDuration);
     this._element.querySelector(`.point__buttons`).lastElementChild.addEventListener(`click`, this._onDeleteButtonClick);
 
-    flatpickr(this._element.querySelector(`.point__time .point__input`), {mode: `range`, dateFormat: `H:i`, enableTime: true, time24hr: true, locale: {rangeSeparator: ` — `}});
+    flatpickr(this._element.querySelector(`.point__time .point__input`), {mode: `range`, dateFormat: "Y-m-d H:i", enableTime: true, locale: {rangeSeparator: ` — `}});
 
   }
 
