@@ -2,34 +2,47 @@ import {createElement} from './create-element.js';
 export const Filters = [`Everything`, `Future`, `Past`];
 
 export const typeTravelWay = {
-  [`Taxi`]: `🚕`,
-  [`Bus`]: `🚌`,
-  [`Train`]: `🚂`,
-  [`Ship`]: `🛳️`,
-  [`Transport`]: `🚊`,
-  [`Drive`]: `🚗`,
-  [`Flight`]: `✈️`,
-  [`Check-in`]: `🏨`,
-  [`Sightseeing`]: `🏛️`,
-  [`Restaurant`]: `🍴`,
+  [`taxi`]: `🚕`,
+  [`bus`]: `🚌`,
+  [`train`]: `🚂`,
+  [`flight`]: `✈️`,
+  [`check-in`]: `🏨`,
+  [`sightseeing`]: `🏛️`,
 };
 
-export const citiesList = [
-  `Amsterdam`,
-  `Geneva`,
-  `Chamonix`,
-  `Vienna`,
-  `Luanda`,
-  `Dacca`,
-  `Minsk`,
-];
-
-export const toUpperFirstLetter = (value) => {
-  let word = value.split(``);
-  word[0] = word[0].toUpperCase();
-  word = word.join(``);
-  return word;
+export const loadPoints = () => {
+  const tripContainer = document.querySelector(`.trip-day__items`);
+  const boardNoPoints = `<div class = "board__no-points">Loading route...</div>`;
+  tripContainer.appendChild(createElement(boardNoPoints));
 };
+
+export const errorLoad = () => {
+  const tripContainer = document.querySelector(`.trip-day__items`);
+  const boardNoPoints = `<div class = "board__no-points">
+  Something went wrong while loading your route info. Check your connection or try again later</div>`;
+  tripContainer.innerHTML = ``;
+  tripContainer.appendChild(createElement(boardNoPoints));
+};
+
+export const block = (component, text) => {
+  const elem = component.element;
+  elem.querySelector(`.card__form`).disabled = true;
+  elem.querySelector(`.point__button--save`).disabled = true;
+  elem.querySelector(`.point__buttons`).lastElementChild.disabled = true;
+  if (text === `Saving`) {
+    elem.querySelector(`.point__button--save`).innerHTML = `${text}...`;
+  } else {
+    elem.querySelector(`.point__buttons`).lastElementChild.innerHTML = `${text}...`;
+  }
+};
+
+export const unblock = (component) => {
+  const elem = component.element;
+  elem.querySelector(`.card__form`).disabled = false;
+  elem.querySelector(`.point__button--save`).disabled = false;
+  elem.querySelector(`.point__buttons`).lastElementChild.disabled = false;
+};
+
 
 export const generalization = (it) => {
   return it.toLowerCase().split(` `).join(`-`);
@@ -40,8 +53,8 @@ export const filterInfoTransport = (points) => {
   const labels = [];
   const data = [];
 
-  for (let i = 0; i < points.length; i++) {
-    const mas = points[i].routeType.join(` `);
+  for (const point of points) {
+    const mas = point.type + `  ` + typeTravelWay[point.type];
     if (massivTags[mas]) {
       massivTags[mas] += 1;
     } else {
@@ -65,12 +78,12 @@ export const filterInfoMoney = (points) => {
   const labels = [];
   const data = [];
 
-  for (let i = 0; i < points.length; i++) {
-    const mas = points[i].routeType.join(` `);
+  for (const point of points) {
+    const mas = point.type + `  ` + typeTravelWay[point.type];
     if (massivTags[mas]) {
-      massivTags[mas] += points[i].price;
+      massivTags[mas] += point.basePrice;
     } else {
-      massivTags[mas] = points[i].price;
+      massivTags[mas] = point.basePrice;
     }
   }
   for (const key in massivTags) {
