@@ -6,19 +6,6 @@ export const getFilterData = (filters) => {
   return massivFilters;
 };
 
-export const renderFilter = (massiv, tripFilter, Filter, initialPoints, renderPoint, tripContainer) => {
-  for (const filter of massiv) {
-    const filterComponent = new Filter(filter);
-
-    filterComponent.onFilter = () => {
-      const filterName = filterComponent.element.querySelector(`input`).id;
-      const filteredPoints = filterPoints(filterName, initialPoints);
-      renderPoint(filteredPoints, tripContainer);
-    };
-    tripFilter.appendChild(filterComponent.render());
-  }
-};
-
 export const filterPoints = (filterName, initialPoints) => {
   switch (filterName) {
     case `filter-everything`:
@@ -26,8 +13,8 @@ export const filterPoints = (filterName, initialPoints) => {
 
     case `filter-future`:
       return initialPoints.filter((it) => {
-        if (it.dateTrip) {
-          return it.dateTrip.isAfter();
+        if (it.dateFrom) {
+          return it.dateFrom.isAfter();
         } else {
           return false;
         }
@@ -35,8 +22,8 @@ export const filterPoints = (filterName, initialPoints) => {
 
     case `filter-past`:
       return initialPoints.filter((it) => {
-        if (it.dateTrip) {
-          return it.dateTrip.isBefore();
+        if (it.dateFrom) {
+          return it.dateFrom.isBefore();
         } else {
           return false;
         }

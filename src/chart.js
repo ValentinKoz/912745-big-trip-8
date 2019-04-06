@@ -1,17 +1,12 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-export const buildChart = (dataFirstChart, dataSecondChart) => {
+export const buildChartMoney = (dataSecondChart) => {
 
   const moneyCtx = document.querySelector(`.statistic__money`);
-  const transportCtx = document.querySelector(`.statistic__transport`);
-  const timeSpendCtx = document.querySelector(`.statistic__time-spend`);
-
   const BAR_HEIGHT = 55;
-  moneyCtx.height = BAR_HEIGHT * dataSecondChart.labels.length;
-  transportCtx.height = BAR_HEIGHT * dataFirstChart.labels.length;
-  timeSpendCtx.height = BAR_HEIGHT * 4;
 
+  moneyCtx.height = BAR_HEIGHT * dataSecondChart.labels.length;
   const moneyChart = new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
@@ -76,7 +71,16 @@ export const buildChart = (dataFirstChart, dataSecondChart) => {
       }
     }
   });
+  return moneyChart;
+};
 
+
+export const buildChartTransport = (dataFirstChart) => {
+
+  const transportCtx = document.querySelector(`.statistic__transport`);
+  const BAR_HEIGHT = 55;
+
+  transportCtx.height = BAR_HEIGHT * dataFirstChart.labels.length;
   const transportChart = new Chart(transportCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
@@ -141,5 +145,5 @@ export const buildChart = (dataFirstChart, dataSecondChart) => {
       }
     }
   });
-  return [moneyChart, transportChart];
+  return transportChart;
 };

@@ -1,17 +1,18 @@
 import Component from './component.js';
+import {typeTravelWay} from './other-functions.js';
 import moment from 'moment';
 
 class PointTrip extends Component {
   constructor(data) {
     super();
-    this._routeType = data.routeType;
-    this._city = data.city;
-    this._photo = data.photo;
+    this._id = data.id;
+    this._type = data.type;
     this._offers = data.offers;
-    this._text = data.text;
-    this._dateTrip = data.dateTrip;
-    this._price = data.price;
-    this._durationPerMinutes = data.durationPerMinutes;
+    this._destination = data.destination;
+    this._dateFrom = data.dateFrom;
+    this._basePrice = data.basePrice;
+    this._dateTo = data.dateTo;
+    this._isFavorite = data.isFavorite;
 
     this.onClick = this.onClick.bind(this);
     this._onEdit = null;
@@ -22,38 +23,34 @@ class PointTrip extends Component {
   }
 
   _duration() {
-    return Math.floor(this._durationPerMinutes / 60) + `h ` + this._durationPerMinutes % 60 + `m`;
-  }
-
-  _finishTrip() {
-    let finishTime = moment(this._dateTrip);
-    finishTime = finishTime.add(this._durationPerMinutes, `minutes`);
-    return finishTime;
+    const minutes = moment.duration(this._dateTo.diff(this._dateFrom)).asMinutes();
+    return `${Math.floor(minutes / 60)}H ${Math.floor(minutes % 60)}M`;
   }
 
   get template() {
     return `
       <article class="trip-point">
-        <i class="trip-icon">${this._routeType[1]}</i>
-        <h3 class="trip-point__title">${this._routeType[0]} to ${this._city}</h3>
+        <i class="trip-icon">${typeTravelWay[this._type]}</i>
+        <h3 class="trip-point__title">${this._type} to ${this._destination.name}</h3>
         <p class="trip-point__schedule">
-          <span class="trip-point__timetable">${this._dateTrip.format(`HH:mm`)}&nbsp;&mdash;${this._finishTrip().format(`HH:mm`)}</span>
+          <span class="trip-point__timetable">${this._dateFrom.format(`HH:mm`)}&nbsp;&mdash;${this._dateTo.format(`HH:mm`)}</span>
           <span class="trip-point__duration">${this._duration()}</span>
         </p>
-        <p class="trip-point__price"> &euro;&nbsp;${this._price}</p>
+        <p class="trip-point__price"> &euro;&nbsp;${this._basePrice}</p>
         <ul class="trip-point__offers">
-          ${this._offers.map((it) => `<li>
-            <button class="trip-point__offer">${it}</button> </li>`).join(` `)}
+          ${this._offers.map((it) => `<li><button class="trip-point__offer">${it.title} +&#8364; ${it.price}</button> </li>`.trim()).join(``)}
         </ul>
       </article>`;
   }
 
   update(data) {
-    this._routeType = data.routeType;
-    this._city = data.city;
-    this._dateTrip = data.dateTrip;
-    this._price = data.price;
-    this._durationPerMinutes = data.durationPerMinutes;
+    this._basePrice = data.basePrice;
+    this._dateFrom = data.dateFrom;
+    this._dateTo = data.dateTo;
+    this._destination = data.destination;
+    this._offers = data.offers;
+    this._type = data.type;
+    this._isFavorite = data.isFavorite;
   }
 
   onClick() {
