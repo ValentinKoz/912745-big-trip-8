@@ -1,15 +1,19 @@
 import Filter from './filter.js';
+import Sort from './trip-sort.js';
 import {getFilterData, filterPoints} from './function-for-filters.js';
-import {buildChartMoney, buildChartTransport} from './chart.js';
-import {renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, loadPoints, errorLoad, block, unblock} from './other-functions.js';
+import {getSortData, sortPoints} from './function-for-sorting.js';
+import {buildChartMoney, buildChartTransport, buildChartTime} from './chart.js';
+import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock} from './other-functions.js';
 import {API} from './api.js';
 import PointTrip from './pointTrip.js';
 import EditPointTrip from './editPoint.js';
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripControlsMenu = document.querySelector(`.trip-controls__menus`);
+const tripContainer = document.querySelector(`.trip-points`);
 
 const Filters = [`Everything`, `Future`, `Past`];
+const Sorts = [`Event`, `Time`, `Price`];
 
 
 const AUTHORIZATION = `Basic eo0w590ik29889a=${Math.random()}`;
@@ -19,18 +23,18 @@ loadPoints();
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
 const renderPoint = (points) => {
-  const tripContainer = document.querySelector(`.trip-day__items`);
+  let number = 1;
   tripContainer.innerHTML = ``;
 
   for (const point of points) {
     const componentTrip = new PointTrip(point);
     const editComponentTrip = new EditPointTrip(point);
 
-    tripContainer.appendChild(componentTrip.render());
+    number = addElemToDom(componentTrip, number);
 
     componentTrip.onEdit = () => {
       editComponentTrip.render();
-      tripContainer.replaceChild(editComponentTrip.element, componentTrip.element);
+      componentTrip.element.parentNode.replaceChild(editComponentTrip.element, componentTrip.element);
       componentTrip.unrender();
     };
 
@@ -49,7 +53,7 @@ const renderPoint = (points) => {
         .then((newPoint) => {
           componentTrip.update(newPoint);
           componentTrip.render();
-          tripContainer.replaceChild(componentTrip.element, editComponentTrip.element);
+          editComponentTrip.element.parentNode.replaceChild(componentTrip.element, editComponentTrip.element);
           editComponentTrip.unrender();
         }).catch(() => {
           editComponentTrip.shake(`Save`);
@@ -71,6 +75,9 @@ const renderPoint = (points) => {
   }
 };
 
+tripContainer.addEventListener(`change`, () => {
+});
+
 export const listDestinations = [];
 api.getDestinations().then((destinations) => {
   listDestinations.push(destinations);
@@ -85,26 +92,46 @@ api.getPoints().then((points) => {
   renderPoint(points);
 }).catch(errorLoad);
 
-const initFilters = getFilterData(Filters);
 
 const renderFilter = (massiv) => {
-  const tripContainer = document.querySelector(`.trip-day__items`);
 
   for (const filter of massiv) {
     const filterComponent = new Filter(filter);
-
     filterComponent.onFilter = () => {
       const filterName = filterComponent.element.querySelector(`input`).id;
       api.getPoints().then((points) => filterPoints(filterName, points))
         .then((filteredPoints) => {
-          renderPoint(filteredPoints, tripContainer);
+          renderPoint(filteredPoints);
         });
     };
     tripFilter.appendChild(filterComponent.render());
   }
 };
 
-api.getPoints().then((points) => renderFilter(initFilters, tripFilter, Filter, renderPoint, points));
+const initFilters = getFilterData(Filters);
+renderFilter(initFilters);
+
+
+const renderSort = (massiv) => {
+  const tripSorting = document.querySelector(`.trip-sorting`);
+
+  for (const sort of massiv) {
+    const sortComponent = new Sort(sort);
+
+    sortComponent.onSort = () => {
+      const filterName = sortComponent.element.querySelector(`input`).id;
+      api.getPoints().then((points) => sortPoints(filterName, points))
+        .then((filteredPoints) => {
+          renderPoint(filteredPoints, tripSorting);
+        });
+    };
+    tripSorting.insertBefore(sortComponent.render(), tripSorting.querySelector(`.trip-sorting__item--offers`));
+  }
+};
+
+const initSort = getSortData(Sorts);
+renderSort(initSort);
+
 
 tripControlsMenu.addEventListener(`click`, (evt) => {
   const menu = document.querySelector(`.trip-controls__menus`);
@@ -125,6 +152,9 @@ tripControlsMenu.addEventListener(`click`, (evt) => {
     });
     api.getPoints().then((points) => filterInfoMoney(points)).then((filteredPoints) => {
       buildChartMoney(filteredPoints);
+    });
+    api.getPoints().then((points) => filterInfoTime(points)).then((filteredPoints) => {
+      buildChartTime(filteredPoints);
     });
 
   } else if (evt.target.innerHTML === `Table`) {

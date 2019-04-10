@@ -32,5 +32,16 @@ class Component {
     this._element.remove();
     this._element = null;
   }
+
+  _totalPrice() {
+    return this._basePrice + this._offers.reduce(function (total, currentValue) {
+      if (currentValue.accepted === true) {
+        return total + currentValue.price;
+      } else {
+        return total;
+      }
+    }, 0);
+  }
+
 }
 export default Component;

@@ -1,9 +1,7 @@
 export const getFilterData = (filters) => {
-  const massivFilters = [];
-  for (const filter of filters) {
-    massivFilters.push({caption: filter});
-  }
-  return massivFilters;
+  return filters.map((filter) => {
+    return {caption: filter};
+  });
 };
 
 export const filterPoints = (filterName, initialPoints) => {

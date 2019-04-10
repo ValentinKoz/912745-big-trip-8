@@ -1,6 +1,7 @@
 import {createElement} from './create-element.js';
-export const Filters = [`Everything`, `Future`, `Past`];
+import moment from 'moment';
 
+export const Filters = [`Everything`, `Future`, `Past`];
 export const typeTravelWay = {
   [`taxi`]: `🚕`,
   [`bus`]: `🚌`,
@@ -11,13 +12,13 @@ export const typeTravelWay = {
 };
 
 export const loadPoints = () => {
-  const tripContainer = document.querySelector(`.trip-day__items`);
+  const tripContainer = document.querySelector(`.trip-points`);
   const boardNoPoints = `<div class = "board__no-points">Loading route...</div>`;
   tripContainer.appendChild(createElement(boardNoPoints));
 };
 
 export const errorLoad = () => {
-  const tripContainer = document.querySelector(`.trip-day__items`);
+  const tripContainer = document.querySelector(`.trip-points`);
   const boardNoPoints = `<div class = "board__no-points">
   Something went wrong while loading your route info. Check your connection or try again later</div>`;
   tripContainer.innerHTML = ``;
@@ -79,17 +80,51 @@ export const filterInfoMoney = (points) => {
   const data = [];
 
   for (const point of points) {
+    // удалить
+    const price = point.basePrice + point.offers.reduce(function (total, currentValue) {
+      if (currentValue.accepted === true) {
+        return total + currentValue.price;
+      } else {
+        return total;
+      }
+    }, 0);
     const mas = point.type + `  ` + typeTravelWay[point.type];
     if (massivTags[mas]) {
-      massivTags[mas] += point.basePrice;
+      massivTags[mas] += price;
     } else {
-      massivTags[mas] = point.basePrice;
+      massivTags[mas] = price;
     }
   }
   for (const key in massivTags) {
     if (key) {
       labels.push(`${key}`);
       data.push(massivTags[key]);
+    }
+  }
+  return {
+    labels,
+    data,
+  };
+};
+
+export const filterInfoTime = (points) => {
+  const massivTags = {};
+  const labels = [];
+  const data = [];
+
+  for (const point of points) {
+    const mas = point.type + `  ` + typeTravelWay[point.type];
+    if (massivTags[mas]) {
+      massivTags[mas] += moment.duration(point.dateTo.diff(point.dateFrom)).asHours();
+    } else {
+      massivTags[mas] = moment.duration(point.dateTo.diff(point.dateFrom)).asHours();
+    }
+  }
+
+  for (const key in massivTags) {
+    if (key) {
+      labels.push(`${key}`);
+      data.push(Math.round(massivTags[key]));
     }
   }
   return {
@@ -121,4 +156,39 @@ export const renderBlankChart = (conteiner) => {
     conteiner.removeChild(oldChild);
   }
   conteiner.appendChild(createElement(blankChart()));
+};
+
+export const addElemToDom = (elem, number) => {
+  const tripPoint = document.querySelector(`.trip-points`);
+  const dt = document.querySelectorAll(`.trip-day__title`);
+  if (dt.length && dt[dt.length - 1].innerHTML === elem._dateFrom.format(`MMM DD`)) {
+    const tripContainer = document.querySelectorAll(`.trip-day__items`);
+    tripContainer[tripContainer.length - 1].appendChild(elem.render());
+    return number;
+  } else {
+    tripPoint.appendChild(createElement(tripDay()));
+
+    const tripDayTitle = document.querySelectorAll(`.trip-day__title`);
+    const tripContainer = document.querySelectorAll(`.trip-day__items`);
+    const dayNumber = document.querySelectorAll(`.trip-day__number`);
+
+    tripContainer[tripContainer.length - 1].appendChild(elem.render());
+    tripDayTitle[tripDayTitle.length - 1].innerHTML = `${elem._dateFrom.format(`MMM DD`)}`;
+    dayNumber[dayNumber.length - 1].innerHTML = `${number}`;
+
+    return ++number;
+  }
+};
+
+export const tripDay = () => {
+  return `
+  <section class="trip-day">
+    <article class="trip-day__info">
+      <span class="trip-day__caption">Day</span>
+      <p class="trip-day__number"></p>
+      <h2 class="trip-day__title"></h2>
+    </article>
+    <div class="trip-day__items">
+    </div>
+  </section>`;
 };
