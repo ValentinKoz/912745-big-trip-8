@@ -3,7 +3,7 @@ import Sort from './trip-sort.js';
 import {getFilterData, filterPoints} from './function-for-filters.js';
 import {getSortData, sortPoints} from './function-for-sorting.js';
 import {buildChartMoney, buildChartTransport, buildChartTime} from './chart.js';
-import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock} from './other-functions.js';
+import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock, scorePrice} from './other-functions.js';
 import {API} from './api.js';
 import PointTrip from './pointTrip.js';
 import EditPointTrip from './editPoint.js';
@@ -55,7 +55,8 @@ const renderPoint = (points) => {
           componentTrip.render();
           editComponentTrip.element.parentNode.replaceChild(componentTrip.element, editComponentTrip.element);
           editComponentTrip.unrender();
-        }).catch(() => {
+        }).then(scorePrice)
+        .catch(() => {
           editComponentTrip.shake(`Save`);
           unblock(editComponentTrip);
         });
@@ -67,16 +68,24 @@ const renderPoint = (points) => {
         .then(unblock(editComponentTrip))
         .then(() => api.getPoints())
         .then(renderPoint)
+        .then(scorePrice)
         .catch(() => {
           editComponentTrip.shake(`Delete`);
           unblock(editComponentTrip);
         });
     };
+
+    editComponentTrip.onExit = () => {
+      api.getPoints()
+        .then(unblock(editComponentTrip))
+        .then(() => {
+          componentTrip.render();
+          editComponentTrip.element.parentNode.replaceChild(componentTrip.element, editComponentTrip.element);
+          editComponentTrip.unrender();
+        });
+    };
   }
 };
-
-tripContainer.addEventListener(`change`, () => {
-});
 
 export const listDestinations = [];
 api.getDestinations().then((destinations) => {
@@ -90,7 +99,7 @@ api.getOffers().then((offres) => {
 
 api.getPoints().then((points) => {
   renderPoint(points);
-}).catch(errorLoad);
+}).then(scorePrice).catch(errorLoad);
 
 
 const renderFilter = (massiv) => {
@@ -134,6 +143,8 @@ renderSort(initSort);
 
 
 tripControlsMenu.addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+
   const menu = document.querySelector(`.trip-controls__menus`);
   const main = document.querySelector(`.main`);
 

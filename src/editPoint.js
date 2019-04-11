@@ -27,10 +27,12 @@ class EditPointTrip extends Component {
     this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onChangeFavorite = this._onChangeFavorite.bind(this);
     this._onSelectOffers = this._onSelectOffers.bind(this);
+    this._onExitClick = this._onExitClick.bind(this);
 
     this._element = null;
     this._onSubmit = null;
     this._onDelete = null;
+    this._onExit = null;
   }
 
 
@@ -40,6 +42,10 @@ class EditPointTrip extends Component {
 
   set onDelete(fn) {
     this._onDelete = fn;
+  }
+
+  set onExit(fn) {
+    this._onExit = fn;
   }
 
   _processForm() {
@@ -112,6 +118,12 @@ class EditPointTrip extends Component {
   _onDeleteButtonClick() {
     if (typeof this._onDelete === `function`) {
       this._onDelete({id: this._id});
+    }
+  }
+
+  _onExitClick(evt) {
+    if (typeof this._onExit === `function` && evt.keyCode === 27) {
+      this._onExit();
     }
   }
 
@@ -247,7 +259,8 @@ class EditPointTrip extends Component {
 
   bind() {
     this._element.addEventListener(`submit`, this._onSubmitClick);
-    this._element.querySelector(`.travel-way__select`).addEventListener(`click`, this._onChangeTravelWay);
+    this._element.addEventListener(`keydown`, this._onExitClick);
+    this._element.querySelector(`.travel-way__select`).addEventListener(`change`, this._onChangeTravelWay);
     this._element.querySelector(`.point__destination-input`).addEventListener(`change`, this._onChangeCities);
     this._element.querySelector(`.point__price .point__input`).addEventListener(`change`, this._onChangePrice);
     this._element.querySelector(`.point__time .point__input:first-child`).addEventListener(`change`, this._onChangeFirstDate);
@@ -263,7 +276,8 @@ class EditPointTrip extends Component {
 
   unbind() {
     this._element.removeEventListener(`submit`, this._onSubmitClick);
-    this._element.querySelector(`.travel-way__select`).removeEventListener(`click`, this._onChangeTravelWay);
+    this._element.removeEventListener(`keydown`, this._onExitClick);
+    this._element.querySelector(`.travel-way__select`).removeEventListener(`change`, this._onChangeTravelWay);
     this._element.querySelector(`.point__destination-input`).removeEventListener(`change`, this._onChangeCities);
     this._element.querySelector(`.point__price .point__input`).removeEventListener(`change`, this._onChangePrice);
     this._element.querySelector(`.point__time .point__input:first-child`).removeEventListener(`change`, this._onChangeFirstDate);

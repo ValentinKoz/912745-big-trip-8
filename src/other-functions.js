@@ -11,6 +11,15 @@ export const typeTravelWay = {
   [`sightseeing`]: `🏛️`,
 };
 
+export const scorePrice = () => {
+  const pricePoints = document.querySelectorAll(`.trip-point__price`);
+  const totalPrice = [...pricePoints].reduce((total, point)=>{
+    return total + +point.innerHTML.split(`€&nbsp;`)[1];
+  }, 0);
+  const conteinerTotalPrice = document.querySelector(`.trip__total-cost`);
+  conteinerTotalPrice.innerHTML = `&#8364; ${totalPrice}`;
+};
+
 export const loadPoints = () => {
   const tripContainer = document.querySelector(`.trip-points`);
   const boardNoPoints = `<div class = "board__no-points">Loading route...</div>`;
