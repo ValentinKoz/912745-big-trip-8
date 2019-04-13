@@ -3,10 +3,11 @@ import Sort from './trip-sort.js';
 import {getFilterData, filterPoints} from './function-for-filters.js';
 import {getSortData, sortPoints} from './function-for-sorting.js';
 import {buildChartMoney, buildChartTransport, buildChartTime} from './chart.js';
-import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock, scorePrice} from './other-functions.js';
+import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock, scorePrice, changeDate} from './other-functions.js';
 import {API} from './api.js';
 import PointTrip from './pointTrip.js';
 import EditPointTrip from './editPoint.js';
+import ModelPoint from './model-point.js';
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripControlsMenu = document.querySelector(`.trip-controls__menus`);
@@ -14,10 +15,11 @@ const tripContainer = document.querySelector(`.trip-points`);
 
 const Filters = [`Everything`, `Future`, `Past`];
 const Sorts = [`Event`, `Time`, `Price`];
-
+const pointsAfterFilter = [];
 
 const AUTHORIZATION = `Basic eo0w590ik29889a=${Math.random()}`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
+
 
 loadPoints();
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
@@ -54,6 +56,7 @@ const renderPoint = (points) => {
           componentTrip.update(newPoint);
           componentTrip.render();
           editComponentTrip.element.parentNode.replaceChild(componentTrip.element, editComponentTrip.element);
+          changeDate(componentTrip, newPoint);
           editComponentTrip.unrender();
         }).then(scorePrice)
         .catch(() => {
@@ -108,9 +111,12 @@ const renderFilter = (massiv) => {
     const filterComponent = new Filter(filter);
     filterComponent.onFilter = () => {
       const filterName = filterComponent.element.querySelector(`input`).id;
+      document.querySelector(`#sorting-event`).checked = true;
       api.getPoints().then((points) => filterPoints(filterName, points))
         .then((filteredPoints) => {
           renderPoint(filteredPoints);
+
+          pointsAfterFilter.push(filteredPoints);
         });
     };
     tripFilter.appendChild(filterComponent.render());
@@ -129,7 +135,14 @@ const renderSort = (massiv) => {
 
     sortComponent.onSort = () => {
       const filterName = sortComponent.element.querySelector(`input`).id;
-      api.getPoints().then((points) => sortPoints(filterName, points))
+
+      api.getPoints().then((points) => {
+        if (pointsAfterFilter[pointsAfterFilter.length - 1]) {
+          return sortPoints(filterName, pointsAfterFilter[pointsAfterFilter.length - 1]);
+        } else {
+          return sortPoints(filterName, points);
+        }
+      })
         .then((filteredPoints) => {
           renderPoint(filteredPoints, tripSorting);
         });
@@ -141,6 +154,25 @@ const renderSort = (massiv) => {
 const initSort = getSortData(Sorts);
 renderSort(initSort);
 
+const newEvent = document.querySelector(`.trip-controls__new-event`);
+
+newEvent.addEventListener(`click`, () => {
+  const newInformation = [];
+  api.getPoints().then((points) => {
+    newInformation.push(new ModelPoint({id: `${points.length}`, destination: {name: ``, description: ``, picture: []}}));
+    const editComponent = new EditPointTrip(newInformation[0]);
+    addElemToDom(editComponent, +newInformation[0].id + 1);
+
+    editComponent.onSubmit = (newObject) => {
+      block(editComponent, `Saving`);
+      api.createPoints(newObject)
+      .then((q) => api.getPoints())
+      .then((points) => {
+        renderPoint(points);
+      }).then(unblock(editComponent));
+    };
+  });
+});
 
 tripControlsMenu.addEventListener(`click`, (evt) => {
   evt.preventDefault();

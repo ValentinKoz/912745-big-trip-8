@@ -104,7 +104,7 @@ class EditPointTrip extends Component {
   }
 
   _onChangePrice(evt) {
-    this._basePrice = evt.target.value;
+    this._basePrice = +evt.target.value;
   }
 
   _onChangeFirstDate(evt) {
@@ -148,9 +148,9 @@ class EditPointTrip extends Component {
           </label>
 
           <div class="travel-way">
-            <label class="travel-way__label" for="travel-way__toggle">${typeTravelWay[this._type]}</label>
+            <label class="travel-way__label" for="travel-way__toggle${this._id}">${typeTravelWay[this._type]}</label>
 
-            <input type="checkbox" class="travel-way__toggle visually-hidden" id="travel-way__toggle">
+            <input type="checkbox" class="travel-way__toggle visually-hidden" id="travel-way__toggle${this._id}">
 
             <div class="travel-way__select">
               <div class="travel-way__select-group">
@@ -186,8 +186,8 @@ class EditPointTrip extends Component {
           </div>
           <div class="point__time">
             choose time
-              <input class="point__input" type="text" value="${this._dateFrom.format(`DD MMM YY HH:mm`)}" name="date-start" placeholder="19:00">
-              <input class="point__input" type="text" value="${this._dateTo.format(`DD MMM YY HH:mm`)}" name="date-end" placeholder="21:00">
+              <input class="point__input" type="text" value="${this._dateFrom.format(`HH:mm DD MMM YY`)}" name="date-start" placeholder="19:00">
+              <input class="point__input" type="text" value="${this._dateTo.format(`HH:mm DD MMM YY`)}" name="date-end" placeholder="21:00">
           </div>
           <label class="point__price">
             write price
@@ -223,7 +223,7 @@ class EditPointTrip extends Component {
             <h3 class="point__details-title">Destination</h3>
             <p class="point__destination-text">${this._destination.description}</p>
             <div class="point__destination-images">
-            ${this._destination.pictures.map((it) => `<img src="${it.src}" alt="${it.description}" class="point__destination-image">`).join(``)}
+            ${this._destination.pictures && this._destination.pictures.map((it) => `<img src="${it.src}" alt="${it.description}" class="point__destination-image">`).join(``)}
             </div>
           </section>
           <input type="hidden" class="point__total-price" name="total-price" value="${this._totalPrice()}">
@@ -259,7 +259,7 @@ class EditPointTrip extends Component {
 
   bind() {
     this._element.addEventListener(`submit`, this._onSubmitClick);
-    this._element.addEventListener(`keydown`, this._onExitClick);
+    window.addEventListener(`keydown`, this._onExitClick);
     this._element.querySelector(`.travel-way__select`).addEventListener(`change`, this._onChangeTravelWay);
     this._element.querySelector(`.point__destination-input`).addEventListener(`change`, this._onChangeCities);
     this._element.querySelector(`.point__price .point__input`).addEventListener(`change`, this._onChangePrice);
@@ -269,14 +269,14 @@ class EditPointTrip extends Component {
     this._element.querySelector(`.point__favorite`).addEventListener(`click`, this._onChangeFavorite);
     this._element.querySelector(`.point__offers-wrap`).addEventListener(`change`, this._onSelectOffers);
 
-    flatpickr(this._element.querySelector(`.point__time .point__input:first-child`), {dateFormat: `j M y H:i`, enableTime: true});
-    flatpickr(this._element.querySelector(`.point__time .point__input:nth-child(2)`), {dateFormat: `j M y H:i`, enableTime: true});
+    flatpickr(this._element.querySelector(`.point__time .point__input:first-child`), {dateFormat: ` H:i j M y`, enableTime: true});
+    flatpickr(this._element.querySelector(`.point__time .point__input:nth-child(2)`), {dateFormat: ` H:i j M y`, enableTime: true});
 
   }
 
   unbind() {
     this._element.removeEventListener(`submit`, this._onSubmitClick);
-    this._element.removeEventListener(`keydown`, this._onExitClick);
+    window.removeEventListener(`keydown`, this._onExitClick);
     this._element.querySelector(`.travel-way__select`).removeEventListener(`change`, this._onChangeTravelWay);
     this._element.querySelector(`.point__destination-input`).removeEventListener(`change`, this._onChangeCities);
     this._element.querySelector(`.point__price .point__input`).removeEventListener(`change`, this._onChangePrice);

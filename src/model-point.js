@@ -2,13 +2,13 @@ import moment from 'moment';
 
 class ModelPoint {
   constructor(data) {
-    this.id = data[`id`];
-    this.basePrice = data[`base_price`];
-    this.dateFrom = moment(data[`date_from`]);
-    this.dateTo = moment(data[`date_to`]);
-    this.destination = data[`destination`];
-    this.offers = data[`offers`];
-    this.type = data[`type`];
+    this.id = data[`id`] || ``;
+    this.basePrice = data[`base_price`] || 0;
+    this.dateFrom = moment(data[`date_from`]) || moment();
+    this.dateTo = moment(data[`date_to`]) || moment();
+    this.destination = data[`destination`] || {};
+    this.offers = data[`offers`] || [];
+    this.type = data[`type`] || ``;
     this.isFavorite = Boolean(data[`is_favorite`]);
   }
 

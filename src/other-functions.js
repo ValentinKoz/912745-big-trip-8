@@ -169,24 +169,24 @@ export const renderBlankChart = (conteiner) => {
 
 export const addElemToDom = (elem, number) => {
   const tripPoint = document.querySelector(`.trip-points`);
-  const dt = document.querySelectorAll(`.trip-day__title`);
-  if (dt.length && dt[dt.length - 1].innerHTML === elem._dateFrom.format(`MMM DD`)) {
-    const tripContainer = document.querySelectorAll(`.trip-day__items`);
-    tripContainer[tripContainer.length - 1].appendChild(elem.render());
-    return number;
-  } else {
-    tripPoint.appendChild(createElement(tripDay()));
+  tripPoint.appendChild(createElement(tripDay()));
 
-    const tripDayTitle = document.querySelectorAll(`.trip-day__title`);
-    const tripContainer = document.querySelectorAll(`.trip-day__items`);
-    const dayNumber = document.querySelectorAll(`.trip-day__number`);
+  const tripDayTitle = document.querySelectorAll(`.trip-day__title`);
+  const tripContainer = document.querySelectorAll(`.trip-day__items`);
+  const dayNumber = document.querySelectorAll(`.trip-day__number`);
 
-    tripContainer[tripContainer.length - 1].appendChild(elem.render());
-    tripDayTitle[tripDayTitle.length - 1].innerHTML = `${elem._dateFrom.format(`MMM DD`)}`;
-    dayNumber[dayNumber.length - 1].innerHTML = `${number}`;
+  tripContainer[tripContainer.length - 1].appendChild(elem.render());
+  tripDayTitle[tripDayTitle.length - 1].innerHTML = `${elem._dateFrom.format(`MMM DD`)}`;
+  dayNumber[dayNumber.length - 1].innerHTML = `${number}`;
 
-    return ++number;
-  }
+  return ++number;
+};
+
+export const changeDate = (componentTrip, newPoint) => {
+  const tripDay = componentTrip.element.parentNode.parentNode;
+  const tripDayTitle = tripDay.querySelector(`.trip-day__title`);
+  tripDayTitle.innerHTML = `${newPoint.dateFrom.format(`MMM DD`)}`;
+  return tripDay;
 };
 
 export const tripDay = () => {
