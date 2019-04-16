@@ -1,13 +1,13 @@
+import API from './api.js';
+import PointTrip from './pointTrip.js';
+import EditPointTrip from './editPoint.js';
 import Filter from './filter.js';
 import Sort from './trip-sort.js';
+import TotalCost from './trip-total-cost.js';
 import {getFilterData, filterPoints} from './function-for-filters.js';
 import {getSortData, sortPoints} from './function-for-sorting.js';
 import {buildChartMoney, buildChartTransport, buildChartTime} from './chart.js';
-import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock, scorePrice, changeDate} from './other-functions.js';
-import {API} from './api.js';
-import PointTrip from './pointTrip.js';
-import EditPointTrip from './editPoint.js';
-import ModelPoint from './model-point.js';
+import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock, changeDate} from './other-functions.js';
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripControlsMenu = document.querySelector(`.trip-controls__menus`);
@@ -17,22 +17,36 @@ const Filters = [`Everything`, `Future`, `Past`];
 const Sorts = [`Event`, `Time`, `Price`];
 const pointsAfterFilter = [];
 
-const AUTHORIZATION = `Basic eo0w590ik29889a=${Math.random()}`;
+const AUTHORIZATION = `Basic eo0w590ik29889a=0.2819259828395535`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
-
 
 loadPoints();
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
-const renderPoint = (points) => {
-  let number = 1;
+const renderTotalCost = () => {
+  const costConteiner = document.querySelector(`.trip`);
+
+  if (document.querySelector(`.trip__total`)) {
+    costConteiner.removeChild(document.querySelector(`.trip__total`));
+  }
+  api.getPoints().then((points) => {
+    const tripCost = new TotalCost(points);
+    costConteiner.appendChild(tripCost.render());
+  });
+};
+
+const renderPoint = (points, newCreatePoint = false) => {
   tripContainer.innerHTML = ``;
 
   for (const point of points) {
     const componentTrip = new PointTrip(point);
     const editComponentTrip = new EditPointTrip(point);
 
-    number = addElemToDom(componentTrip, number);
+    if (newCreatePoint && points[points.length - 1] === point) {
+      addElemToDom(editComponentTrip);
+    } else {
+      addElemToDom(componentTrip);
+    }
 
     componentTrip.onEdit = () => {
       editComponentTrip.render();
@@ -58,7 +72,7 @@ const renderPoint = (points) => {
           editComponentTrip.element.parentNode.replaceChild(componentTrip.element, editComponentTrip.element);
           changeDate(componentTrip, newPoint);
           editComponentTrip.unrender();
-        }).then(scorePrice)
+        }).then(renderTotalCost)
         .catch(() => {
           editComponentTrip.shake(`Save`);
           unblock(editComponentTrip);
@@ -69,9 +83,8 @@ const renderPoint = (points) => {
       block(editComponentTrip, `Deleting`);
       api.deletePoint({id})
         .then(unblock(editComponentTrip))
-        .then(() => api.getPoints())
-        .then(renderPoint)
-        .then(scorePrice)
+        .then(tripContainer.removeChild(editComponentTrip.element.parentNode.parentNode))
+        .then(renderTotalCost)
         .catch(() => {
           editComponentTrip.shake(`Delete`);
           unblock(editComponentTrip);
@@ -102,20 +115,21 @@ api.getOffers().then((offres) => {
 
 api.getPoints().then((points) => {
   renderPoint(points);
-}).then(scorePrice).catch(errorLoad);
+}).then(renderTotalCost)
+.catch(errorLoad);
 
+const renderFilter = (massivFilters) => {
 
-const renderFilter = (massiv) => {
-
-  for (const filter of massiv) {
+  for (const filter of massivFilters) {
     const filterComponent = new Filter(filter);
+
     filterComponent.onFilter = () => {
       const filterName = filterComponent.element.querySelector(`input`).id;
       document.querySelector(`#sorting-event`).checked = true;
-      api.getPoints().then((points) => filterPoints(filterName, points))
+      api.getPoints()
+        .then((points) => filterPoints(filterName, points))
         .then((filteredPoints) => {
           renderPoint(filteredPoints);
-
           pointsAfterFilter.push(filteredPoints);
         });
     };
@@ -157,21 +171,11 @@ renderSort(initSort);
 const newEvent = document.querySelector(`.trip-controls__new-event`);
 
 newEvent.addEventListener(`click`, () => {
-  const newInformation = [];
-  api.getPoints().then((points) => {
-    newInformation.push(new ModelPoint({id: `${points.length}`, destination: {name: ``, description: ``, picture: []}}));
-    const editComponent = new EditPointTrip(newInformation[0]);
-    addElemToDom(editComponent, +newInformation[0].id + 1);
-
-    editComponent.onSubmit = (newObject) => {
-      block(editComponent, `Saving`);
-      api.createPoints(newObject)
-      .then((q) => api.getPoints())
-      .then((points) => {
-        renderPoint(points);
-      }).then(unblock(editComponent));
-    };
-  });
+  api.getPoints().then((points) => api.createPoints(points[0]))
+  .then(() => api.getPoints())
+  .then((points) => {
+    renderPoint(points, true);
+  }).catch();
 });
 
 tripControlsMenu.addEventListener(`click`, (evt) => {

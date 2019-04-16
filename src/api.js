@@ -2,14 +2,14 @@ import ModelPoint from './model-point.js';
 import ModelOffer from './model-offer.js';
 import ModelDestination from './model-destination.js';
 
-export const Method = {
+const Method = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
   DELETE: `DELETE`
 };
 
-export const checkStatus = (response) => {
+const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response;
   } else {
@@ -17,7 +17,7 @@ export const checkStatus = (response) => {
   }
 };
 
-export const toJSON = (response) => {
+const toJSON = (response) => {
   return response.json();
 };
 
@@ -81,3 +81,4 @@ export const API = class {
       });
   }
 };
+export default API;

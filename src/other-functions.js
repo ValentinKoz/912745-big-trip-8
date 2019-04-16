@@ -89,7 +89,6 @@ export const filterInfoMoney = (points) => {
   const data = [];
 
   for (const point of points) {
-    // удалить
     const price = point.basePrice + point.offers.reduce(function (total, currentValue) {
       if (currentValue.accepted === true) {
         return total + currentValue.price;
@@ -167,7 +166,7 @@ export const renderBlankChart = (conteiner) => {
   conteiner.appendChild(createElement(blankChart()));
 };
 
-export const addElemToDom = (elem, number) => {
+export const addElemToDom = (elem) => {
   const tripPoint = document.querySelector(`.trip-points`);
   tripPoint.appendChild(createElement(tripDay()));
 
@@ -176,16 +175,18 @@ export const addElemToDom = (elem, number) => {
   const dayNumber = document.querySelectorAll(`.trip-day__number`);
 
   tripContainer[tripContainer.length - 1].appendChild(elem.render());
-  tripDayTitle[tripDayTitle.length - 1].innerHTML = `${elem._dateFrom.format(`MMM DD`)}`;
-  dayNumber[dayNumber.length - 1].innerHTML = `${number}`;
+  tripDayTitle[tripDayTitle.length - 1].innerHTML = `${elem._dateFrom.format(`MMM YY`)}`;
+  dayNumber[dayNumber.length - 1].innerHTML = `${elem._dateFrom.format(`DD`)}`;
 
-  return ++number;
+  return tripPoint;
 };
 
 export const changeDate = (componentTrip, newPoint) => {
   const tripDay = componentTrip.element.parentNode.parentNode;
   const tripDayTitle = tripDay.querySelector(`.trip-day__title`);
-  tripDayTitle.innerHTML = `${newPoint.dateFrom.format(`MMM DD`)}`;
+  const dayNumber = document.querySelectorAll(`.trip-day__number`);
+  tripDayTitle.innerHTML = `${newPoint.dateFrom.format(`MMM YY`)}`;
+  dayNumber.innerHTML = `${newPoint.dateFrom.format(`DD`)}`;
   return tripDay;
 };
 

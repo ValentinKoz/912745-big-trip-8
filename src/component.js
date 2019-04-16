@@ -33,8 +33,8 @@ class Component {
     this._element = null;
   }
 
-  _totalPrice() {
-    return this._basePrice + this._offers.reduce(function (total, currentValue) {
+  _totalPrice(basePrice, offers) {
+    return basePrice + offers.reduce(function (total, currentValue) {
       if (currentValue.accepted === true) {
         return total + currentValue.price;
       } else {

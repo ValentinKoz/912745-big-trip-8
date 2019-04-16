@@ -36,7 +36,7 @@ class PointTrip extends Component {
           <span class="trip-point__timetable">${this._dateFrom.format(`HH:mm`)}&nbsp;&mdash;${this._dateTo.format(`HH:mm`)}</span>
           <span class="trip-point__duration">${this._duration()}</span>
         </p>
-        <p class="trip-point__price"> &euro;&nbsp;${this._totalPrice()}</p>
+        <p class="trip-point__price"> &euro;&nbsp;${this._totalPrice(this._basePrice, this._offers)}</p>
         <ul class="trip-point__offers">
           ${this._offers.map((it) => `<li><button class="trip-point__offer">${it.title} +&#8364; ${it.price}</button> </li>`.trim()).join(``)}
         </ul>

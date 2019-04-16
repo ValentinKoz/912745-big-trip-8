@@ -148,7 +148,7 @@ class EditPointTrip extends Component {
           </label>
 
           <div class="travel-way">
-            <label class="travel-way__label" for="travel-way__toggle${this._id}">${typeTravelWay[this._type]}</label>
+            <label class="travel-way__label" for="travel-way__toggle${this._id}">${this._type ? typeTravelWay[this._type] : ``}</label>
 
             <input type="checkbox" class="travel-way__toggle visually-hidden" id="travel-way__toggle${this._id}">
 
@@ -178,8 +178,8 @@ class EditPointTrip extends Component {
           </div>
 
           <div class="point__destination-wrap">
-            <label class="point__destination-label" for="destination">${this._type} to </label>
-            <input class="point__destination-input" list="destination-select" id="destination" value="${this._destination.name}" name="destination">
+            <label class="point__destination-label" for="destination">${this._type ? this._type + ` to ` : `` }</label>
+            <input class="point__destination-input" placeholder="enter city" list="destination-select" id="destination" value="${this._destination.name ? this._destination.name : ``}" name="destination">
             <datalist id="destination-select">
             ${listDestinations[0].map((destination) => `<option value="${destination.name}"></option>`).join(` `)}
             </datalist>
@@ -197,7 +197,7 @@ class EditPointTrip extends Component {
 
           <div class="point__buttons">
             <button class="point__button point__button--save" type="submit">Save</button>
-            <button class="point__button" type="reset">Delete</button>
+            <button class="point__button point__button--delete" type="reset">Delete</button>
           </div>
 
           <div class="paint__favorite-wrap">
@@ -221,12 +221,12 @@ class EditPointTrip extends Component {
           </section>
           <section class="point__destination">
             <h3 class="point__details-title">Destination</h3>
-            <p class="point__destination-text">${this._destination.description}</p>
+            <p class="point__destination-text">${this._destination.description && this._destination.description}</p>
             <div class="point__destination-images">
-            ${this._destination.pictures && this._destination.pictures.map((it) => `<img src="${it.src}" alt="${it.description}" class="point__destination-image">`).join(``)}
+            ${this._destination.pictures ? this._destination.pictures.map((it) => `<img src="${it.src}" alt="${it.description}" class="point__destination-image">`).join(``) : ``}
             </div>
           </section>
-          <input type="hidden" class="point__total-price" name="total-price" value="${this._totalPrice()}">
+          <input type="hidden" class="point__total-price" name="total-price" value="${this._totalPrice(this._basePrice, this._offers)}">
         </section>
       </form>
     </article>`;
@@ -250,7 +250,7 @@ class EditPointTrip extends Component {
       if (text === `Save`) {
         this._element.querySelector(`.point__button--save`).innerHTML = `${text}`;
       } else {
-        this._element.querySelector(`.point__buttons`).lastElementChild.innerHTML = `${text}`;
+        this._element.querySelector(`.point__button--delete`).innerHTML = `${text}`;
       }
       this._element.style.border = ``;
       this._element.style.animation = ``;
@@ -282,7 +282,7 @@ class EditPointTrip extends Component {
     this._element.querySelector(`.point__price .point__input`).removeEventListener(`change`, this._onChangePrice);
     this._element.querySelector(`.point__time .point__input:first-child`).removeEventListener(`change`, this._onChangeFirstDate);
     this._element.querySelector(`.point__time .point__input:nth-child(2)`).removeEventListener(`change`, this._onChangeSecondDate);
-    this._element.querySelector(`.point__buttons`).lastElementChild.removeEventListener(`click`, this._onDeleteButtonClick);
+    this._element.querySelector(`.point__button--delete`).removeEventListener(`click`, this._onDeleteButtonClick);
     this._element.querySelector(`.point__favorite`).removeEventListener(`click`, this._onChangeFavorite);
     this._element.querySelector(`.point__offers-wrap`).removeEventListener(`change`, this._onSelectOffers);
   }
