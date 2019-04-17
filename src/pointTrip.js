@@ -22,15 +22,10 @@ class PointTrip extends Component {
     this._onEdit = fn;
   }
 
-  _duration() {
-    const minutes = moment.duration(this._dateTo.diff(this._dateFrom)).asMinutes();
-    return `${Math.floor(minutes / 60)}H ${Math.floor(minutes % 60)}M`;
-  }
-
   get template() {
     return `
       <article class="trip-point">
-        <i class="trip-icon">${typeTravelWay[this._type]}</i>
+        <i class="trip-icon">${typeTravelWay[this._type.toUpperCase()]}</i>
         <h3 class="trip-point__title">${this._type} to ${this._destination.name}</h3>
         <p class="trip-point__schedule">
           <span class="trip-point__timetable">${this._dateFrom.format(`HH:mm`)}&nbsp;&mdash;${this._dateTo.format(`HH:mm`)}</span>
@@ -41,6 +36,11 @@ class PointTrip extends Component {
           ${this._offers.map((it) => `<li><button class="trip-point__offer">${it.title} +&#8364; ${it.price}</button> </li>`.trim()).join(``)}
         </ul>
       </article>`;
+  }
+
+  _duration() {
+    const minutes = moment.duration(this._dateTo.diff(this._dateFrom)).asMinutes();
+    return `${Math.floor(minutes / 60)}H ${Math.floor(minutes % 60)}M`;
   }
 
   update(data) {

@@ -7,18 +7,24 @@ import TotalCost from './trip-total-cost.js';
 import {getFilterData, filterPoints} from './function-for-filters.js';
 import {getSortData, sortPoints} from './function-for-sorting.js';
 import {buildChartMoney, buildChartTransport, buildChartTime} from './chart.js';
-import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock, changeDate} from './other-functions.js';
+import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock, changeDate, Filters} from './other-functions.js';
+
+const AUTHORIZATION = `Basic eo0w590ik29889a=0.2819259828395536`;
+const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
+
+const Sorts = [`Event`, `Time`, `Price`];
 
 const tripFilter = document.querySelector(`.trip-filter`);
 const tripControlsMenu = document.querySelector(`.trip-controls__menus`);
 const tripContainer = document.querySelector(`.trip-points`);
+const newEvent = document.querySelector(`.trip-controls__new-event`);
 
-const Filters = [`Everything`, `Future`, `Past`];
-const Sorts = [`Event`, `Time`, `Price`];
 const pointsAfterFilter = [];
 
-const AUTHORIZATION = `Basic eo0w590ik29889a=0.2819259828395535`;
-const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
+export const listDestinations = [];
+export const listOffres = [];
+const initSort = getSortData(Sorts);
+const initFilters = getFilterData(Filters);
 
 loadPoints();
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
@@ -103,21 +109,6 @@ const renderPoint = (points, newCreatePoint = false) => {
   }
 };
 
-export const listDestinations = [];
-api.getDestinations().then((destinations) => {
-  listDestinations.push(destinations);
-});
-
-export const listOffres = [];
-api.getOffers().then((offres) => {
-  listOffres.push(offres);
-});
-
-api.getPoints().then((points) => {
-  renderPoint(points);
-}).then(renderTotalCost)
-.catch(errorLoad);
-
 const renderFilter = (massivFilters) => {
 
   for (const filter of massivFilters) {
@@ -137,10 +128,6 @@ const renderFilter = (massivFilters) => {
   }
 };
 
-const initFilters = getFilterData(Filters);
-renderFilter(initFilters);
-
-
 const renderSort = (massiv) => {
   const tripSorting = document.querySelector(`.trip-sorting`);
 
@@ -158,17 +145,29 @@ const renderSort = (massiv) => {
         }
       })
         .then((filteredPoints) => {
-          renderPoint(filteredPoints, tripSorting);
+          renderPoint(filteredPoints);
         });
     };
     tripSorting.insertBefore(sortComponent.render(), tripSorting.querySelector(`.trip-sorting__item--offers`));
   }
 };
 
-const initSort = getSortData(Sorts);
-renderSort(initSort);
+api.getDestinations().then((destinations) => {
+  listDestinations.push(destinations);
+});
 
-const newEvent = document.querySelector(`.trip-controls__new-event`);
+api.getOffers().then((offres) => {
+  listOffres.push(offres);
+});
+
+api.getPoints().then((points) => {
+  renderPoint(points);
+}).then(renderTotalCost)
+.catch(errorLoad);
+
+
+renderFilter(initFilters);
+renderSort(initSort);
 
 newEvent.addEventListener(`click`, () => {
   api.getPoints().then((points) => api.createPoints(points[0]))

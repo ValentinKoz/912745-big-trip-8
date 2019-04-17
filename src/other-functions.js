@@ -1,22 +1,39 @@
 import {createElement} from './create-element.js';
 import moment from 'moment';
 
-export const Filters = [`Everything`, `Future`, `Past`];
 export const typeTravelWay = {
-  [`taxi`]: `🚕`,
-  [`bus`]: `🚌`,
-  [`train`]: `🚂`,
-  [`flight`]: `✈️`,
-  [`check-in`]: `🏨`,
-  [`sightseeing`]: `🏛️`,
+  [`TAXI`]: `🚕`,
+  [`BUS`]: `🚌`,
+  [`TRAIN`]: `🚂`,
+  [`FLIGHT`]: `✈️`,
+  [`CHECK-IN`]: `🏨`,
+  [`SIGHTSEEING`]: `🏛️`,
+};
+export const Filters = [`Everything`, `Future`, `Past`];
+
+export const blankChart = () => {
+  return `
+    <section class="statistic content-wrap" id="stats">
+      <div class="statistic__item statistic__item--money">
+        <canvas class="statistic__money" width="900"></canvas>
+      </div>
+
+      <div class="statistic__item statistic__item--transport">
+        <canvas class="statistic__transport" width="900"></canvas>
+      </div>
+
+      <div class="statistic__item statistic__item--time-spend">
+        <canvas class="statistic__time-spend" width="900"></canvas>
+      </div>
+  </section>`;
 };
 
 export const scorePrice = () => {
   const pricePoints = document.querySelectorAll(`.trip-point__price`);
-  const totalPrice = [...pricePoints].reduce((total, point)=>{
+  const conteinerTotalPrice = document.querySelector(`.trip__total-cost`);
+  const totalPrice = [...pricePoints].reduce((total, point) => {
     return total + +point.innerHTML.split(`€&nbsp;`)[1];
   }, 0);
-  const conteinerTotalPrice = document.querySelector(`.trip__total-cost`);
   conteinerTotalPrice.innerHTML = `&#8364; ${totalPrice}`;
 };
 
@@ -64,7 +81,7 @@ export const filterInfoTransport = (points) => {
   const data = [];
 
   for (const point of points) {
-    const mas = point.type + `  ` + typeTravelWay[point.type];
+    const mas = point.type + `  ` + typeTravelWay[point.type.toUpperCase()];
     if (massivTags[mas]) {
       massivTags[mas] += 1;
     } else {
@@ -96,7 +113,7 @@ export const filterInfoMoney = (points) => {
         return total;
       }
     }, 0);
-    const mas = point.type + `  ` + typeTravelWay[point.type];
+    const mas = point.type + `  ` + typeTravelWay[point.type.toUpperCase()];
     if (massivTags[mas]) {
       massivTags[mas] += price;
     } else {
@@ -121,7 +138,7 @@ export const filterInfoTime = (points) => {
   const data = [];
 
   for (const point of points) {
-    const mas = point.type + `  ` + typeTravelWay[point.type];
+    const mas = point.type + `  ` + typeTravelWay[point.type.toUpperCase()];
     if (massivTags[mas]) {
       massivTags[mas] += moment.duration(point.dateTo.diff(point.dateFrom)).asHours();
     } else {
@@ -139,23 +156,6 @@ export const filterInfoTime = (points) => {
     labels,
     data,
   };
-};
-
-export const blankChart = () => {
-  return `
-    <section class="statistic content-wrap" id="stats">
-      <div class="statistic__item statistic__item--money">
-        <canvas class="statistic__money" width="900"></canvas>
-      </div>
-
-      <div class="statistic__item statistic__item--transport">
-        <canvas class="statistic__transport" width="900"></canvas>
-      </div>
-
-      <div class="statistic__item statistic__item--time-spend">
-        <canvas class="statistic__time-spend" width="900"></canvas>
-      </div>
-  </section>`;
 };
 
 export const renderBlankChart = (conteiner) => {

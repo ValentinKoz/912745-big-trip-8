@@ -1,10 +1,11 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+const BAR_HEIGHT = 55;
+
 export const buildChartMoney = (dataSecondChart) => {
 
   const moneyCtx = document.querySelector(`.statistic__money`);
-  const BAR_HEIGHT = 55;
 
   moneyCtx.height = BAR_HEIGHT * dataSecondChart.labels.length;
   const moneyChart = new Chart(moneyCtx, {
@@ -78,7 +79,6 @@ export const buildChartMoney = (dataSecondChart) => {
 export const buildChartTransport = (dataFirstChart) => {
 
   const transportCtx = document.querySelector(`.statistic__transport`);
-  const BAR_HEIGHT = 55;
 
   transportCtx.height = BAR_HEIGHT * dataFirstChart.labels.length;
   const transportChart = new Chart(transportCtx, {
@@ -149,9 +149,8 @@ export const buildChartTransport = (dataFirstChart) => {
 };
 
 export const buildChartTime = (dataChart) => {
-
   const timeSpendCtx = document.querySelector(`.statistic__time-spend`);
-  const BAR_HEIGHT = 55;
+
   timeSpendCtx.height = BAR_HEIGHT * dataChart.labels.length;
   const timeSpendChart = new Chart(timeSpendCtx, {
     plugins: [ChartDataLabels],
