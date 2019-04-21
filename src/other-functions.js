@@ -167,6 +167,78 @@ export const renderBlankChart = (conteiner) => {
 };
 
 export const addElemToDom = (elem) => {
+  const tripPoints = document.querySelector(`.trip-points`);
+  if (!tripPoints.firstChild) {
+    tripPoints.insertBefore(createElement(tripDay()), null);
+
+    const tripDayTitle = document.querySelectorAll(`.trip-day__title`);
+    const tripContainer = document.querySelectorAll(`.trip-day__items`);
+    const dayNumber = document.querySelectorAll(`.trip-day__number`);
+
+    tripContainer[0].appendChild(elem.render());
+    tripDayTitle[0].innerHTML = `${elem._dateFrom.format(`MMM YY`)}`;
+    dayNumber[0].innerHTML = `${elem._dateFrom.format(`DD`)}`;
+  }
+
+  for (const n of document.querySelectorAll(`.trip-day`)) {
+    const dayN = n.querySelector(`.trip-day__number`);
+    const secondDayN = n.nextElementSibling ? n.nextElementSibling.querySelector(`.trip-day__number`) : 0;
+    if (elem._dateFrom.format(`DD`) > dayN.innerHTML) {
+      n.before(createElement(tripDay()));
+
+      const tripDayTitle = n.previousElementSibling.querySelector(`.trip-day__title`);
+      const tripContainer = n.previousElementSibling.querySelector(`.trip-day__items`);
+      const dayNumber = n.previousElementSibling.querySelector(`.trip-day__number`);
+
+      tripContainer.appendChild(elem.render());
+      tripDayTitle.innerHTML = `${elem._dateFrom.format(`MMM YY`)}`;
+      dayNumber.innerHTML = `${elem._dateFrom.format(`DD`)}`;
+      break;
+    } else if (elem._dateFrom.format(`DD`) < dayN.innerHTML && secondDayN.innerHTML === undefined) {
+      n.after(createElement(tripDay()));
+
+      const tripDayTitle = n.nextElementSibling.querySelector(`.trip-day__title`);
+      const tripContainer = n.nextElementSibling.querySelector(`.trip-day__items`);
+      const dayNumber = n.nextElementSibling.querySelector(`.trip-day__number`);
+
+      tripContainer.appendChild(elem.render());
+      tripDayTitle.innerHTML = `${elem._dateFrom.format(`MMM YY`)}`;
+      dayNumber.innerHTML = `${elem._dateFrom.format(`DD`)}`;
+      break;
+    }
+
+  }
+  return tripPoints;
+};
+
+export const addNewElemToDom = (elem) => {
+  const tripPoints = document.querySelector(`.trip-points`);
+  if (!tripPoints.firstChild) {
+    tripPoints.insertBefore(createElement(tripDay()), null);
+
+    const tripDayTitle = document.querySelectorAll(`.trip-day__title`);
+    const tripContainer = document.querySelectorAll(`.trip-day__items`);
+    const dayNumber = document.querySelectorAll(`.trip-day__number`);
+
+    tripContainer[0].appendChild(elem.render());
+    tripDayTitle[0].innerHTML = `${elem._dateFrom.format(`MMM YY`)}`;
+    dayNumber[0].innerHTML = `${elem._dateFrom.format(`DD`)}`;
+
+  } else {
+    tripPoints.firstChild.before(createElement(tripDay()));
+
+    const tripDayTitle = document.querySelectorAll(`.trip-day__title`);
+    const tripContainer = document.querySelectorAll(`.trip-day__items`);
+    const dayNumber = document.querySelectorAll(`.trip-day__number`);
+
+    tripContainer[0].appendChild(elem.render());
+    tripDayTitle[0].innerHTML = `${elem._dateFrom.format(`MMM YY`)}`;
+    dayNumber[0].innerHTML = `${elem._dateFrom.format(`DD`)}`;
+  }
+  return tripPoints;
+};
+
+export const renderSortPoint = (elem) => {
   const tripPoint = document.querySelector(`.trip-points`);
   tripPoint.appendChild(createElement(tripDay()));
 

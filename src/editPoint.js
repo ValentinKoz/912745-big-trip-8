@@ -70,7 +70,7 @@ class EditPointTrip extends Component {
                 <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-check-in" name="travel-way" value="check-in" ${this._type === `check-in` ? `checked` : ``}>
                 <label class="travel-way__select-label" for="travel-way-check-in">🏨 check-in</label>
 
-                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travel-way" value="sight-seeing" ${this._type === `sightseeing` ? `checked` : ``}>
+                <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travel-way" value="sightseeing" ${this._type === `sightseeing` ? `checked` : ``}>
                 <label class="travel-way__select-label" for="travel-way-sightseeing">🏛 sightseeing</label>
               </div>
             </div>

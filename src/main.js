@@ -7,9 +7,9 @@ import TotalCost from './trip-total-cost.js';
 import {getFilterData, filterPoints} from './function-for-filters.js';
 import {getSortData, sortPoints} from './function-for-sorting.js';
 import {buildChartMoney, buildChartTransport, buildChartTime} from './chart.js';
-import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock, changeDate, Filters} from './other-functions.js';
+import {addElemToDom, renderBlankChart, blankChart, filterInfoTransport, filterInfoMoney, filterInfoTime, loadPoints, errorLoad, block, unblock, changeDate, Filters, addNewElemToDom} from './other-functions.js';
 
-const AUTHORIZATION = `Basic eo0w590ik29889a=0.2819259828395536`;
+const AUTHORIZATION = `Basic eo0w590ik29889a=0.2812249828315530`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
 
 const Sorts = [`Event`, `Time`, `Price`];
@@ -20,6 +20,7 @@ const tripContainer = document.querySelector(`.trip-points`);
 const newEvent = document.querySelector(`.trip-controls__new-event`);
 
 const pointsAfterFilter = [];
+const currentPoints = [];
 
 export const listDestinations = [];
 export const listOffres = [];
@@ -41,17 +42,20 @@ const renderTotalCost = () => {
   });
 };
 
-const renderPoint = (points, newCreatePoint = false) => {
+const renderPoint = (points, newCreatePoint = false, sort = false) => {
+  const tripPoints = document.querySelector(`.trip-points`);
+  tripPoints.innerHTML = ``;
   tripContainer.innerHTML = ``;
 
   for (const point of points) {
     const componentTrip = new PointTrip(point);
     const editComponentTrip = new EditPointTrip(point);
-
-    if (newCreatePoint && points[points.length - 1] === point) {
-      addElemToDom(editComponentTrip);
+    if (sort) {
+      addNewElemToDom(componentTrip, false);
+    } else if (newCreatePoint && points[points.length - 1] === point) {
+      addNewElemToDom(editComponentTrip);
     } else {
-      addElemToDom(componentTrip);
+      addElemToDom(componentTrip, false);
     }
 
     componentTrip.onEdit = () => {
@@ -75,8 +79,33 @@ const renderPoint = (points, newCreatePoint = false) => {
         .then((newPoint) => {
           componentTrip.update(newPoint);
           componentTrip.render();
+
+          for (const currentPoint of currentPoints[currentPoints.length - 1]) {
+            if (currentPoint.id === newPoint.id) {
+              const updetedPoint = currentPoints[currentPoints.length - 1].indexOf(currentPoint);
+              currentPoints[currentPoints.length - 1][updetedPoint] = newPoint;
+              break;
+            }
+          }
+
+          const currentTripDay = editComponentTrip.element.parentNode.parentNode;
+          currentTripDay.querySelector(`.trip-day__number`).innerHTML = `${point.dateFrom.format(`DD`)}`;
+          currentTripDay.querySelector(`.trip-day__title`).innerHTML = `${point.dateFrom.format(`MMM YY`)}`;
+
           editComponentTrip.element.parentNode.replaceChild(componentTrip.element, editComponentTrip.element);
           changeDate(componentTrip, newPoint);
+          for (const number of document.querySelectorAll(`.trip-day__number`)) {
+            if (number.innerHTML < point.dateFrom.format(`DD`)) {
+              const w = number.parentNode.parentNode;
+              w.before(currentTripDay);
+              break;
+            } else if (number.innerHTML > point.dateFrom.format(`DD`) && number.parentNode.parentNode.nextElementSibling === null) {
+              const w = number.parentNode.parentNode;
+              w.after(currentTripDay);
+              break;
+            }
+          }
+
           editComponentTrip.unrender();
         }).then(renderTotalCost)
         .catch(() => {
@@ -88,6 +117,15 @@ const renderPoint = (points, newCreatePoint = false) => {
     editComponentTrip.onDelete = ({id}) => {
       block(editComponentTrip, `Deleting`);
       api.deletePoint({id})
+        .then(()=> {
+          for (const currentPoint of currentPoints[currentPoints.length - 1]) {
+            if (currentPoint.id === id) {
+              const deleteCurrentPoint = currentPoints[currentPoints.length - 1].indexOf(currentPoint);
+              currentPoints[currentPoints.length - 1].splice(deleteCurrentPoint, 1);
+              break;
+            }
+          }
+        })
         .then(unblock(editComponentTrip))
         .then(tripContainer.removeChild(editComponentTrip.element.parentNode.parentNode))
         .then(renderTotalCost)
@@ -98,13 +136,10 @@ const renderPoint = (points, newCreatePoint = false) => {
     };
 
     editComponentTrip.onExit = () => {
-      api.getPoints()
-        .then(unblock(editComponentTrip))
-        .then(() => {
-          componentTrip.render();
-          editComponentTrip.element.parentNode.replaceChild(componentTrip.element, editComponentTrip.element);
-          editComponentTrip.unrender();
-        });
+      unblock(editComponentTrip);
+      componentTrip.render();
+      editComponentTrip.element.parentNode.replaceChild(componentTrip.element, editComponentTrip.element);
+      editComponentTrip.unrender();
     };
   }
 };
@@ -117,36 +152,40 @@ const renderFilter = (massivFilters) => {
     filterComponent.onFilter = () => {
       const filterName = filterComponent.element.querySelector(`input`).id;
       document.querySelector(`#sorting-event`).checked = true;
-      api.getPoints()
-        .then((points) => filterPoints(filterName, points))
-        .then((filteredPoints) => {
-          renderPoint(filteredPoints);
-          pointsAfterFilter.push(filteredPoints);
-        });
+      const filteredPoints = filterPoints(filterName, currentPoints[currentPoints.length - 1]);
+      filteredPoints.sort((firstElem, secondElem) => {
+        const firstDate = firstElem.dateFrom.format(`DD`);
+        const secondDate = secondElem.dateFrom.format(`DD`);
+        if (firstDate > secondDate) {
+          return 1;
+        } else if (firstDate < secondDate) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+      pointsAfterFilter.push(filteredPoints);
+      renderPoint(filteredPoints, false, true);
     };
     tripFilter.appendChild(filterComponent.render());
   }
 };
 
-const renderSort = (massiv) => {
+const renderSort = (massivSort) => {
   const tripSorting = document.querySelector(`.trip-sorting`);
 
-  for (const sort of massiv) {
+  for (const sort of massivSort) {
     const sortComponent = new Sort(sort);
 
     sortComponent.onSort = () => {
       const filterName = sortComponent.element.querySelector(`input`).id;
-
-      api.getPoints().then((points) => {
-        if (pointsAfterFilter[pointsAfterFilter.length - 1]) {
-          return sortPoints(filterName, pointsAfterFilter[pointsAfterFilter.length - 1]);
-        } else {
-          return sortPoints(filterName, points);
-        }
-      })
-        .then((filteredPoints) => {
-          renderPoint(filteredPoints);
-        });
+      if (pointsAfterFilter[pointsAfterFilter.length - 1]) {
+        const filteredPoints = sortPoints(filterName, pointsAfterFilter[pointsAfterFilter.length - 1]);
+        return renderPoint(filteredPoints, false, true);
+      } else {
+        const filteredPoints = sortPoints(filterName, currentPoints[currentPoints.length - 1]);
+        return renderPoint(filteredPoints, false, true);
+      }
     };
     tripSorting.insertBefore(sortComponent.render(), tripSorting.querySelector(`.trip-sorting__item--offers`));
   }
@@ -161,7 +200,8 @@ api.getOffers().then((offres) => {
 });
 
 api.getPoints().then((points) => {
-  renderPoint(points);
+  currentPoints.push(points);
+  return renderPoint(points);
 }).then(renderTotalCost)
 .catch(errorLoad);
 
@@ -173,7 +213,8 @@ newEvent.addEventListener(`click`, () => {
   api.getPoints().then((points) => api.createPoints(points[0]))
   .then(() => api.getPoints())
   .then((points) => {
-    renderPoint(points, true);
+    currentPoints.push(points);
+    return renderPoint(points, true);
   }).catch();
 });
 
