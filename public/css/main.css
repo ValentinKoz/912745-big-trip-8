@@ -17,7 +17,44 @@ html {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
+.wrapper {
+  display: grid;
+  grid-template-areas: "post-1 post-2"
+						           "post-1 post-2";
+	grid-template-columns: 50% 50%;
+	grid-template-rows: 50% 50%;
+}
 
+.content-wrap {
+  grid-area: post-1;
+  width: 700px;
+  margin: 0 auto;
+}
+.graph {
+  grid-area: post-2;
+  border: 2px red solid;
+}
+.point__wrapper {
+  display: grid;
+  grid-template-areas: "post-1 post-1 post-1 post-1"
+						           "post-2 post-2 post-2 post-2"
+                       "post-2 post-2 post-2 post-2";
+	grid-template-columns: 25% 25% 25% 25%;
+	grid-template-rows: 30% 30% 30%;
+}
+.control__graph {
+  grid-area: post-1;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.GantGraph {
+  grid-area: post-2;
+}
+ .GantGraph > svg {
+   margin-left: 80px;
+ }
 a:link {
   text-decoration: none;
   opacity: 0.7;
@@ -27,13 +64,6 @@ a:link {
 a:hover {
   opacity: 1;
 }
-
-
-.content-wrap {
-  width: 1000px;
-  margin: 0 auto;
-}
-
 
 .header {
   background: var(--color-blue);
@@ -47,7 +77,9 @@ a:hover {
   flex-direction: column;
   height: 100%;
   padding-left: 160px;
+  padding-right: 160px;
   padding-top: 24px;
+  width: 100%;
 }
 
 
@@ -163,6 +195,44 @@ input[type=radio]:checked + .trip-filter__item {
 }
 
 .trip-controls__new-event {
+  background: #FFD054;
+  border: 0;
+  border-radius: 24px;
+  box-sizing: border-box;
+  color: var(--text-color);
+  flex-basis: 170px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: var(--font);
+  font-size: var(--font-size-bigger);
+  font-weight: 900;
+  margin-bottom: 16px;
+  padding: 16px 32px;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.plus {
+  background: #FFD054;
+  border: 0;
+  border-radius: 24px;
+  box-sizing: border-box;
+  color: var(--text-color);
+  flex-basis: 170px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: var(--font);
+  font-size: var(--font-size-bigger);
+  font-weight: 900;
+  margin-bottom: 16px;
+  padding: 16px 32px;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.minus {
   background: #FFD054;
   border: 0;
   border-radius: 24px;

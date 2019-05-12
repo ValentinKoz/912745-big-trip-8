@@ -10,11 +10,12 @@
   <link rel="stylesheet" type="text/css" media="screen" href="./css/main.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="d3.js"></script>
 </head>
 <body>
 
 <header class="header">
-  <div class="content-wrap header__wrap">
+  <div class="header__wrap">
     <section class="trip">
       <div class="trip__schedule">
         <i class="trip-icon">⛰️</i>
@@ -37,15 +38,26 @@
   </div>
 </header>
 
+<div class="wrapper">
+  <main class="main content-wrap" id="table">
+    <form class="trip-sorting">
+      <span class="trip-sorting__item trip-sorting__item--offers">Offers</span>
+    </form>
 
-<main class="main content-wrap" id="table">
-  <form class="trip-sorting">
-    <span class="trip-sorting__item trip-sorting__item--offers">Offers</span>
-  </form>
+    <section class="trip-points">
+    </section>
+  </main>
+  <div class="graph">
+    <div class="point__wrapper">
+      <div class="control__graph">
+        <button class = "minus"><</button>
+        <button class="plus">></button>
+      </div>
+      <div class="GantGraph">
+      </div>
+  </div>
+</div>
 
-  <section class="trip-points">
-  </section>
-</main>
 <script src="./bundle.js"></script>
 <style>
   @keyframes shake {
